@@ -3,14 +3,17 @@ todoForm.title.addEventListener("input", (e) => validateField(e.target));
 todoForm.title.addEventListener("blur", (e) => validateField(e.target));
 todoForm.description.addEventListener("input", (e) => validateField(e.target));
 todoForm.description.addEventListener("blur", (e) => validateField(e.target));
-todoForm.duoDate.addEventListener("input", (e) => validateField(e.target));
-todoForm.duoDate.addEventListener("blur", (e) => validateField(e.target));
+todoForm.dueDate.addEventListener("input", (e) => validateField(e.target));
+todoForm.dueDate.addEventListener("blur", (e) => validateField(e.target));
 
 todoForm.addEventListener("submit" , onSubmit);
 
 let titleValid = true;
 let descriptionValid = true;
-let duoDateValid = true;
+let dueDateValid = true;
+
+const api = new Api("localhost:5000/tasks");
+
 
 
 function validateField(field){
@@ -55,6 +58,29 @@ function validateField(field){
 
 }
 
+
+
+
+
 function onSubmit(e) {
+
     e.preventDefault();
+
+    if(titleValid && descriptionValid && dueDateValid){
+        console.log("submit");
+        saveTask();
+    }
+
+    
+    function saveTask() {
+        const task = {
+            title: todoForm.title.value,
+            description: todoForm.description.value,
+            dueDate: todoForm.dueDate.value,
+            completed: false, 
+        };
+        console.log(task);
+
+        api.create();
+    }
 };
