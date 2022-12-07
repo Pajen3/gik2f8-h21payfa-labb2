@@ -14,6 +14,7 @@ let titleValid = true;
 let descriptionValid = true;
 let dueDateValid = true;
 
+
 const api = new Api("http://localhost:5000/tasks");
 
 
@@ -87,14 +88,14 @@ function saveTask() {
         title: todoForm.title.value,
         description: todoForm.description.value,
         dueDate: todoForm.dueDate.value,
-        completed: false, 
+        completed : false,
+
     };
 
     api.create(task).then((task) => {
     if(task){
         renderList();
-    }
-} );
+    }} );
 }
 
 function renderList() { 
@@ -117,7 +118,10 @@ function renderTask({id, title, description, dueDate}){
         <h3 class="mb-3 flex-1 text-xl font-bold text-pink-800 uppercase">${title} </h3>
         <div> 
             <span> ${dueDate} </span>
-            <button onclick="deleteTask(${id})" class="inline-block bg-amber-500 text-xs text-amber-900 border border-white px-3 py-1 rounded-md ml-2">Ta bort </button> 
+            <button onclick="deleteTask(${id})" class="inline-block bg-amber-500 text-xs text-amber-900 border border-white px-3 py-1 rounded-md ml-2">Ta bort </button>
+            <br>
+            <input onchange="completeTask(${id})" type="checkbox" id="${id}" name="checkbox">
+            <label  for="ckeckbox"> Avklarat </label>
         </div> 
         </div>`;
     description && (
@@ -131,11 +135,32 @@ function renderTask({id, title, description, dueDate}){
 }
 
 
+
+
+function completeTask(id){
+    var checkbox = document.getElementById(id);
+
+    if (checkbox.checked == true)
+    {
+     
+    console.log(id + " Checkbox is clicked");
+     
+    }else{
+    console.log(id + " unchecked")
+        
+    }
+    
+}
+
+
+
+
 function deleteTask(id) {
     api.remove(id).then(result => {
         renderList();
     });
 }
+
 
 
 renderList();
