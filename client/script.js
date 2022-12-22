@@ -1,4 +1,3 @@
-
 todoForm.title.addEventListener("input", (e) => validateField(e.target));
 todoForm.title.addEventListener("blur", (e) => validateField(e.target));
 todoForm.description.addEventListener("input", (e) => validateField(e.target));
@@ -98,60 +97,65 @@ function saveTask() {
     }} );
 }
 
-function renderList() { 
-    console.log('rendering');
-    
-    api.getAll().then(tasks => {
-        todoListElement.innerHTML= "";
-        if (tasks && tasks.length > 0) {
-            tasks.forEach(task => {
-                todoListElement.insertAdjacentHTML('beforeend', renderTask(task));
-            });
-        }
-    })
+
+//La in kod för att sortera efter datum
+function renderList() {
+    const sortList = [];
+    api.getAll().then((tasks) => {
+      todoListElement.innerHTML = '';
+      if (tasks && tasks.length > 0) {
+        tasks.forEach((task) => {
+            sortList.push(task);
+        });
+        sortList.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+
+        sortList.forEach((task) => {
+          todoListElement.insertAdjacentHTML('beforeend', renderTask(task));
+        });
+      }
+    });
+  }
+
+
+
+  // La in koder så att avklarade uppgifter ska ändra design, 
+
+function renderTask({ id, title, description, dueDate, completed }) {
+
+  const isChecked =  completed == true ? "checked" : "";
+  const colorChange = completed == true ? "text-green-700 rounded-xl opacity-60	bg-black border-4 border-black" : "";
+  const textChange = completed == true ? "text-green-500 text-lg font-extrabold" : "";
+  const textChangeTwo = completed == true ? "text-emerald-200" : "";
+
+
+  let html = `
+    <li class="select-none mt-2 py-2 border-b border-amber-300 ${colorChange}">
+      <div class="flex items-center p-1 " id=${id}>
+        <h3 class="mb-3 flex-1 text-xl font-bold text-pink-800 uppercase ${textChangeTwo}">${title}</h3>
+        <div>
+          <span>${dueDate}</span>
+          <button onclick="deleteTask(${id})" class="${textChange} inline-block bg-amber-500 text-xs text-amber-900 border border-white px-3 py-1 rounded-md ml-2">Ta bort</button>
+          <br>
+          <input onclick="completeTask(${id})" type="checkbox" id="completeBox" ${isChecked}>
+          <label class="${textChange}" for="completedBox">Utförd</label><br>
+        </div>
+      </div>`;
+  description &&
+    (html += `
+      <p class="ml-8 mt-2 text-xs italic ${textChangeTwo}">${description}</p>
+  `);
+  html += `
+    </li>`;
+
+  return html;
 }
 
-function renderTask({id, title, description, dueDate}){
-    let html = `
-        <li class="select-none mt-2 py-2 border-b border-amber-300">
-        <div class="flex items-center">
-        <h3 class="mb-3 flex-1 text-xl font-bold text-pink-800 uppercase">${title} </h3>
-        <div> 
-            <span> ${dueDate} </span>
-            <button onclick="deleteTask(${id})" class="inline-block bg-amber-500 text-xs text-amber-900 border border-white px-3 py-1 rounded-md ml-2">Ta bort </button>
-            <br>
-            <input onchange="completeTask(${id})" type="checkbox" id="${id}" name="checkbox">
-            <label  for="ckeckbox"> Avklarat </label>
-        </div> 
-        </div>`;
-    description && (
-        html += `
-            <p class="ml-8 mt-2 text-xs italic">${description} </p>
-        `);
-    html+= `
-        </li>`
+// När man klickar på checkboxen triggas en API call.
 
-        return html;
+function completeTask(id) {
+  const taskComplete = document.getElementById(id).querySelector('#completeBox').checked;
+  api.update(id, taskComplete).then(result => { renderList()});
 }
-
-
-
-
-function completeTask(id){
-    var checkbox = document.getElementById(id);
-
-    if (checkbox.checked == true)
-    {
-     
-    console.log(id + " Checkbox is clicked");
-     
-    }else{
-    console.log(id + " unchecked")
-        
-    }
-    
-}
-
 
 
 
@@ -160,6 +164,8 @@ function deleteTask(id) {
         renderList();
     });
 }
+
+
 
 
 
