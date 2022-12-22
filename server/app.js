@@ -98,7 +98,7 @@ app.put('/tasks/:id', async (req, res) => {
     
     } 
     catch (error) {
-      res.taskComplete(500).send({ error: error.stack });
+      res.status(500).send({ error: error.stack });
     }
   });
 
